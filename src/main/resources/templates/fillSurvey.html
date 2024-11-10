@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Survey Application</title>
+  <title>Mini-SurveyMonkey</title>
   <script>
         let currentQuestionIndex = 0;
         let surveyData = { questions: [] };
@@ -52,26 +52,24 @@
 
         function nextQuestion() {
             saveAnswer();
-            currentQuestionIndex++;
-            renderQuestion(currentQuestionIndex);
+            renderQuestion(currentQuestionIndex + 1);
         }
 
         function previousQuestion() {
             saveAnswer();
-            currentQuestionIndex--;
-            renderQuestion(currentQuestionIndex);
+            renderQuestion(currentQuestionIndex - 1);
         }
 
         async function submitSurvey() {
             saveAnswer();
             for (const question of surveyData.questions) {
                 const responsePayload = {
-                    questionId: question.id,
-                    response: question.type === 'OPEN_ENDED' ? question.textResponse : question.numberResponse
+                    textResponse: question.textResponse,
+                    numberResponse: question.numberResponse
                 };
 
                 try {
-                    const response = await fetch('/api/response', {
+                    const response = await fetch(`/api/response/${question.id}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(responsePayload)
