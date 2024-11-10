@@ -13,8 +13,13 @@ import java.util.Optional;
 @RequestMapping("/api/surveys")
 public class SurveyController {
 
+
+    private final SurveyService surveyService;
+
     @Autowired
-    private SurveyService surveyService;
+    public SurveyController(SurveyService surveyService) {
+        this.surveyService = surveyService;
+    }
 
     @PostMapping
     public Survey createSurvey(@RequestBody Survey survey) {
