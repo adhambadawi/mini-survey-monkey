@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Survey Results</title>
+</head>
+
+<body>
+<div class="container mt-3">
+    <!-- Displaying the Survey Title -->
+    <h3 th:text="'Survey Results: ' + ${survey.title}"></h3>
+    <hr>
+
+    <!-- Displaying the Survey Questions -->
+    <div th:each="question, iterator : ${survey.questions}">
+        <!-- Displaying question number and text -->
+        <p th:text="'Question ' + ${iterator.count} + ': ' + ${question.text}"></p>
+    </div>
+</div>
+</body>
+</html>
