@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Survey Application</title>
+  <title>Mini-SurveyMonkey</title>
+  <!-- CSRF Token -->
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <script>
         let currentQuestionIndex = 0;
         let surveyData = { questions: [] };
@@ -52,28 +55,33 @@
 
         function nextQuestion() {
             saveAnswer();
-            currentQuestionIndex++;
-            renderQuestion(currentQuestionIndex);
+            renderQuestion(currentQuestionIndex + 1);
         }
 
         function previousQuestion() {
             saveAnswer();
-            currentQuestionIndex--;
-            renderQuestion(currentQuestionIndex);
+            renderQuestion(currentQuestionIndex - 1);
         }
 
         async function submitSurvey() {
             saveAnswer();
+            // Retrieve CSRF token and header name from meta tags
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
             for (const question of surveyData.questions) {
                 const responsePayload = {
-                    questionId: question.id,
-                    response: question.type === 'OPEN_ENDED' ? question.textResponse : question.numberResponse
+                    textResponse: question.textResponse,
+                    numberResponse: question.numberResponse
                 };
 
                 try {
-                    const response = await fetch('/api/response', {
+                    const response = await fetch(`/api/response/${question.id}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                          'Content-Type': 'application/json',
+                          [csrfHeaderName]: csrfToken
+                        },
                         body: JSON.stringify(responsePayload)
                     });
                     if (!response.ok) {
