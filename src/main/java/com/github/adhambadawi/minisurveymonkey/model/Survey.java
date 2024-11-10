@@ -1,5 +1,6 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class Survey {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User creator;
 
     @JsonManagedReference
