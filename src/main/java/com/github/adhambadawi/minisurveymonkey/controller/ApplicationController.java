@@ -65,7 +65,7 @@ public class ApplicationController {
     public String fillSurvey() {
         return "fillSurvey";
     }
-    
+  
     @PostMapping("/survey/{id}/close")
     public String closeSurvey(@PathVariable Long id, Principal principal) {
         Optional<Survey> optionalSurvey = surveyService.getSurveyById(id);
