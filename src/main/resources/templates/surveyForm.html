@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Survey</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/public/survey.js"></script>
+</head>
+<body>
+
+<h1>Create Survey</h1>
+
+
+<form th:action="@{/survey/new}" th:object="${survey}" method="post">
+    <label>Survey Title:</label>
+    <br>
+    <input type="text" th:field="*{title}" required /><br><br>
+
+    <h2>Add Questions</h2>
+    <div id="questions-container">
+        <!-- Add questions using here using js -->
+    </div>
+
+    <button type="button" id="add-question">Add Question</button><br><br>
+
+    <button type="submit">Save Survey</button>
+</form>
+
+</body>
+</html>

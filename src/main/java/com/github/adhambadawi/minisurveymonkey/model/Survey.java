@@ -1,5 +1,6 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class Survey {
     @JoinColumn(name = "user_id")
     private User creator;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 

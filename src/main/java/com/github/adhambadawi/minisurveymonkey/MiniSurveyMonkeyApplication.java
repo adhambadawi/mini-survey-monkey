@@ -1,4 +1,4 @@
-package com.github.adhambadawi.minisurveymonkey.model;
+package com.github.adhambadawi.minisurveymonkey;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

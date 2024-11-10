@@ -1,5 +1,6 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,9 @@ public class Question {
     @ElementCollection
     private List<String> options = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "survey_id")
+    @JsonIgnore
     private Survey survey;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
