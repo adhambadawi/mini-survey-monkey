@@ -1,6 +1,8 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,9 +16,9 @@ public class Response {
     private Integer numberResponse;
     private String choiceResponse;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "question_id")
-    @JsonIgnore
+    @JsonBackReference
     private Question question;
 
     public Response() {}

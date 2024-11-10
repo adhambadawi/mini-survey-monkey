@@ -1,6 +1,6 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ public class Survey {
 
     private boolean isClosed = false;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonBackReference
     private User creator;
 
     @JsonManagedReference

@@ -50,7 +50,7 @@ public class ApplicationController {
             question.setSurvey(survey);
         }
         surveyService.createSurvey(survey);
-        return "surveyQuestions";
+        return "redirect:/";
     }
 
     @GetMapping("/")
