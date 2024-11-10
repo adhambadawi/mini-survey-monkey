@@ -12,6 +12,8 @@
 
 
 <form th:action="@{/survey/new}" th:object="${survey}" method="post">
+    <!-- CSRF Token -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <label>Survey Title:</label>
     <br>
     <input type="text" th:field="*{title}" required /><br><br>

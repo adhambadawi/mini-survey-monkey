@@ -14,6 +14,7 @@ public class User {
 
     private String username;
     private String password;
+    private String role = "ROLE_USER";
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Survey> surveys = new ArrayList<>();
@@ -66,5 +67,13 @@ public class User {
     public void removeSurvey(Survey survey) {
         surveys.remove(survey);
         survey.setCreator(null);
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
