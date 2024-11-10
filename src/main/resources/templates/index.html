@@ -1,12 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey Application</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <h1>Welcome to the Survey Application</h1>
-<a href="/survey/new">Create a Survey</a>
+<p th:if="${user != null}">
+    Logged in as <strong th:text="${user}"></strong> |
+    <a th:href="@{/logout}">Logout</a>
+</p>
+<p th:if="${user == null}">
+    <a th:href="@{/login}">Login</a> |
+    <a th:href="@{/register}">Register</a>
+</p>
+<a th:href="@{/survey/new}">Create a Survey</a>
+
+<h2>Available Surveys</h2>
+<ul>
+    <li th:each="survey : ${surveys}">
+        <span th:text="${survey.title}"></span> -
+        <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span>
+        <!-- Link to participate if the survey is open -->
+        <a th:if="!${survey.isClosed}" th:href="@{/survey/{id}/participate(id=${survey.id})}">Participate</a>
+    </li>
+</ul>
 </body>
 </html>
