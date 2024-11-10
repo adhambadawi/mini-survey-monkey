@@ -5,6 +5,8 @@ import com.github.adhambadawi.minisurveymonkey.model.User;
 import com.github.adhambadawi.minisurveymonkey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,5 +79,16 @@ public class SurveyController {
     @PutMapping("/close/{id}")
     public void closeSurvey(@PathVariable Long id) {
         surveyService.closeSurvey(id);
+    }
+
+    @GetMapping("/survey/{id}/participate")
+    public String participateSurvey(@PathVariable Long id, Model model) {
+        Optional<Survey> optionalSurvey = surveyService.getSurveyById(id);
+        if (optionalSurvey.isPresent()) {
+            model.addAttribute("surveyId", id);
+            return "fillSurvey";
+        } else {
+            return "redirect:/";
+        }
     }
 }

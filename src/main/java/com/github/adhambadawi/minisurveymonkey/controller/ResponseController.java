@@ -2,6 +2,7 @@ package com.github.adhambadawi.minisurveymonkey.controller;
 
 import com.github.adhambadawi.minisurveymonkey.model.Question;
 import com.github.adhambadawi.minisurveymonkey.model.Response;
+import com.github.adhambadawi.minisurveymonkey.service.QuestionService;
 import com.github.adhambadawi.minisurveymonkey.service.ResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +13,15 @@ import java.util.List;
 @RequestMapping("/api/response")
 public class ResponseController {
 
-    private final ResponseService responseService;
-
     @Autowired
-    public ResponseController(ResponseService responseService) {
-        this.responseService = responseService;
-    }
+    private ResponseService responseService;
+    @Autowired
+    private QuestionService questionService;
 
-    @PostMapping
-    public Response create(@RequestBody Response response) {
+    @PostMapping("/{questionId}")
+    public Response create(@PathVariable Long questionId, @RequestBody Response response) {
+        Question question = questionService.get(questionId).get();
+        response.setQuestion(question);
         return responseService.create(response);
     }
 
