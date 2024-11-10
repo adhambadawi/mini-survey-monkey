@@ -2,6 +2,9 @@
 <html>
 <head>
   <title>Mini-SurveyMonkey</title>
+  <!-- CSRF Token -->
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <script>
         let currentQuestionIndex = 0;
         let surveyData = { questions: [] };
@@ -62,6 +65,10 @@
 
         async function submitSurvey() {
             saveAnswer();
+            // Retrieve CSRF token and header name from meta tags
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
             for (const question of surveyData.questions) {
                 const responsePayload = {
                     textResponse: question.textResponse,
@@ -71,7 +78,10 @@
                 try {
                     const response = await fetch(`/api/response/${question.id}`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                          'Content-Type': 'application/json',
+                          [csrfHeaderName]: csrfToken
+                        },
                         body: JSON.stringify(responsePayload)
                     });
                     if (!response.ok) {

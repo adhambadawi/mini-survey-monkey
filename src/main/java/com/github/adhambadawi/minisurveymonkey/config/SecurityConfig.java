@@ -43,18 +43,22 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(new AntPathRequestMatcher("/"),
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/register"),
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/css/**"),
                                 new AntPathRequestMatcher("/js/**"),
-                                new AntPathRequestMatcher("/h2-console/**"))
-                        .permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/survey/new"),
-                                new AntPathRequestMatcher("/survey/*/close"))
-                        .hasRole("USER")
-                        .anyRequest()
-                        .authenticated()
+                                new AntPathRequestMatcher("/h2-console/**"),
+                                new AntPathRequestMatcher("/survey/*/participate"),
+                                new AntPathRequestMatcher("/survey/*/submit"),
+                                new AntPathRequestMatcher("/api/response/**")
+                        ).permitAll()
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/survey/new"),
+                                new AntPathRequestMatcher("/survey/*/close")
+                        ).hasRole("USER")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
