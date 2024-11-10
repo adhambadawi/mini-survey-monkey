@@ -13,8 +13,6 @@ import java.util.List;
 @RequestMapping("/api/response")
 public class ResponseController {
 
-    private final ResponseService responseService;
-
     @Autowired
     private ResponseService responseService;
     @Autowired
