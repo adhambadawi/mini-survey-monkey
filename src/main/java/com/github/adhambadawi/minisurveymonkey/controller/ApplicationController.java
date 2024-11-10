@@ -51,5 +51,8 @@ public class ApplicationController {
         return "index";
     }
 
-
+    @GetMapping("/survey/fill")
+    public String fillSurvey() {
+        return "fillSurvey";
+    }
 }

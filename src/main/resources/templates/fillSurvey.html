@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Survey Application</title>
+  <script>
+        let currentQuestionIndex = 0;
+        let surveyData = { questions: [] };
+
+        async function loadSurvey(surveyId) {
+            try {
+                const response = await fetch(`/api/surveys/${surveyId}`);
+                surveyData = await response.json();
+                document.getElementById("surveyTitle").innerText = surveyData.title;
+                renderQuestion(0);
+            } catch (error) {
+                console.error("Error loading survey:", error);
+                alert("Failed to load survey. Please try again.");
+            }
+        }
+
+        function renderQuestion(index) {
+            if (index < 0 || index >= surveyData.questions.length) return;
+            currentQuestionIndex = index;
+
+            const question = surveyData.questions[currentQuestionIndex];
+            document.getElementById("questionText").innerText = question.text;
+
+            const textInput = document.getElementById("textResponseInput");
+            const numberInput = document.getElementById("numberResponseInput");
+
+            if (question.type === 'OPEN_ENDED') {
+                textInput.style.display = 'block';
+                numberInput.style.display = 'none';
+                textInput.value = question.textResponse || '';
+            } else if (question.type === 'NUMBER_RANGE') {
+                textInput.style.display = 'none';
+                numberInput.style.display = 'block';
+                numberInput.value = question.numberResponse || '';
+                numberInput.min = question.minValue;
+                numberInput.max = question.maxValue;
+            }
+        }
+
+        function saveAnswer() {
+            const question = surveyData.questions[currentQuestionIndex];
+            if (question.type === 'OPEN_ENDED') {
+                question.textResponse = document.getElementById("textResponseInput").value;
+            } else if (question.type === 'NUMBER_RANGE') {
+                question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
+            }
+        }
+
+        function nextQuestion() {
+            saveAnswer();
+            currentQuestionIndex++;
+            renderQuestion(currentQuestionIndex);
+        }
+
+        function previousQuestion() {
+            saveAnswer();
+            currentQuestionIndex--;
+            renderQuestion(currentQuestionIndex);
+        }
+
+        async function submitSurvey() {
+            saveAnswer();
+            for (const question of surveyData.questions) {
+                const responsePayload = {
+                    questionId: question.id,
+                    response: question.type === 'OPEN_ENDED' ? question.textResponse : question.numberResponse
+                };
+
+                try {
+                    const response = await fetch('/api/response', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(responsePayload)
+                    });
+                    if (!response.ok) {
+                        alert(`Failed to submit response for question ID ${question.id}`);
+                        return;
+                    }
+                } catch (error) {
+                    console.error("Error submitting response:", error);
+                    alert(`Error submitting response for question ID ${question.id}`);
+                    return;
+                }
+            }
+            alert("All responses submitted successfully!");
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const surveyId = new URLSearchParams(window.location.search).get("surveyId");
+            if (surveyId) {
+                loadSurvey(surveyId);
+            } else {
+                alert("Survey ID not provided.");
+            }
+        });
+    </script>
+</head>
+<body>
+<h1 id="surveyTitle">Loading survey...</h1>
+
+<div>
+  <p id="questionText"></p>
+  <input type="text" id="textResponseInput" style="display: none;" />
+  <input type="number" id="numberResponseInput" min="1" max="10" style="display: none;" />
+</div>
+
+<button type="button" onclick="previousQuestion()">Previous</button>
+<button type="button" onclick="nextQuestion()">Next</button>
+<button type="button" onclick="submitSurvey()">Submit</button>
+</body>
+</html>
