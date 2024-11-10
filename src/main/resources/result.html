@@ -13,12 +13,12 @@
 <body>
 
 <div class="container mt-3">
-    <h3 class="title" th:text="'Survey Results: '+ ${survey.name}" />
+    <h3 class="title" th:text="'Survey Results: '+ ${survey.title}" />
     <hr>
 
 <!--Displaying questions and their answers-->
     <div class="allQuestions" th:each="question, iterator : ${survey.questions}">
-        <p th:utext="${'<b>Question '} + ${iterator.count} + ${':</b> '} + ${question.content}"></p>
+        <p th:utext="${'<b>Question '} + ${iterator.count} + ${':</b> '} + ${question.text}"></p>
 
 <!--open-ended questions-->
         <div th:switch="${question.type.toString()}">
@@ -29,7 +29,7 @@
             </div>
 
 <!--number questions (bar chart)-->
-            <div th:case="'NUMBER'">
+            <div th:case="'NUMBER_RANGE'">
                 <div style="width: 500px">
                     <canvas id="histogramChart" width="100px" height="50px"></canvas>
                 </div>
@@ -72,7 +72,7 @@
 <!--Pie chart-->
 
             </div>
-            <div th:case="'OPTION'">
+            <div th:case="'MULTIPLE_CHOICE'">
                 <div style = "inline-size: 30%">
                     <canvas th:id="'pieChart' + ${iterator.index}"></canvas>
                 </div>
