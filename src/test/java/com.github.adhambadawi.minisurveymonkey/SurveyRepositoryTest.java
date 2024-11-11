@@ -1,3 +1,5 @@
+package com.github.adhambadawi.minisurveymonkey;
+
 import com.github.adhambadawi.minisurveymonkey.model.Survey;
 import com.github.adhambadawi.minisurveymonkey.model.User;
 import com.github.adhambadawi.minisurveymonkey.repository.SurveyRepository;
@@ -90,44 +92,3 @@ public class SurveyRepositoryTest {
         assertThat(creatorOpenSurveys).doesNotContain(survey2);
     }
 }
-
-//package com.github.adhambadawi.minisurveymonkey.testing;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//import com.github.adhambadawi.minisurveymonkey.model.Survey;
-//import com.github.adhambadawi.minisurveymonkey.model.User;
-//import com.github.adhambadawi.minisurveymonkey.repository.SurveyRepository;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//
-//import java.util.List;
-//
-//@DataJpaTest
-//public class SurveyRepositoryTest {
-//
-//    @Autowired
-//    private SurveyRepository surveyRepository;
-//
-//    @Test
-//    public void testFindByTitleContainingIgnoreCase() {
-//        Survey survey = new Survey("Test Survey");
-//        surveyRepository.save(survey);
-//
-//        List<Survey> foundSurveys = surveyRepository.findByTitleContainingIgnoreCase("test");
-//        assertFalse(foundSurveys.isEmpty());
-//        assertEquals("Test Survey", foundSurveys.get(0).getTitle());
-//    }
-//
-//    @Test
-//    public void testFindByIsClosed() {
-//        Survey openSurvey = new Survey("Open Survey");
-//        openSurvey.setClosed(false);
-//        surveyRepository.save(openSurvey);
-//
-//        List<Survey> openSurveys = surveyRepository.findByIsClosed(false);
-//        assertFalse(openSurveys.isEmpty());
-//        assertEquals("Open Survey", openSurveys.get(0).getTitle());
-//    }
-//}

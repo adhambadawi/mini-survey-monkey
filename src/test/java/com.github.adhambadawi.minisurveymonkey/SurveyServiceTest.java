@@ -1,4 +1,4 @@
-package com.github.adhambadawi.minisurveymonkey.testing;
+package com.github.adhambadawi.minisurveymonkey;
 import com.github.adhambadawi.minisurveymonkey.model.Survey;
 import com.github.adhambadawi.minisurveymonkey.model.User;
 import com.github.adhambadawi.minisurveymonkey.repository.SurveyRepository;
