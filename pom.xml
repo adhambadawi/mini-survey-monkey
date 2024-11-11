@@ -1,15 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="
-         http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.4</version>
-        <relativePath/> <!-- Lookup parent from the repository -->
+        <relativePath/>
     </parent>
 
     <groupId>com.github.adhambadawi</groupId>
@@ -30,11 +28,10 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- JUnit Jupiter API -->
+        <!-- Spring Boot Starter Test (JUnit 5, Mockito, AssertJ) -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -44,32 +41,17 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- H2 Database -->
+        <!-- H2 Database for in-memory testing -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Thymeleaf Template Engine -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>3.3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-            <version>2.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>4.0.2</version>
         </dependency>
 
         <!-- Spring Security -->
@@ -84,15 +66,46 @@
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
 
-        <!-- Password Encoder -->
+        <!-- Spring Security Crypto for password encoding -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
+
+        <!-- Jackson Databind for JSON handling -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+
+        <!-- Eclipse Persistence JPA (for entity management) -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
+            <version>2.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
+        <!-- JUnit Jupiter API and Engine for JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit Platform Launcher -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.3</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
