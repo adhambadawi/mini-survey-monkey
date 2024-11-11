@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
+    Survey findById(long id);;
     List<Survey> findByTitleContainingIgnoreCase(String title);
     List<Survey> findByCreator(User creator);
     List<Survey> findByIsClosed(boolean isClosed);

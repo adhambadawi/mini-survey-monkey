@@ -1,6 +1,8 @@
 package com.github.adhambadawi.minisurveymonkey.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,10 @@ public class Question {
 
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "survey_id")
-    @JsonIgnore
+    @JsonBackReference
     private Survey survey;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Response> responses = new ArrayList<>();
 
