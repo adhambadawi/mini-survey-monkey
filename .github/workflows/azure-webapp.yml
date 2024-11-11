@@ -48,3 +48,7 @@ jobs:
         app-name: 'mini-survey-monkey-app'
         slot-name: 'production'
         package: '${{ github.workspace }}/target/mini-survey-monkey-1.0-SNAPSHOT.jar'
+
+    - name: List contents of target directory
+      run: ls -alh ${{ github.workspace }}/target
+
