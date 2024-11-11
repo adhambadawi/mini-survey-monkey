@@ -24,6 +24,9 @@
         <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span>
         <!-- Link to participate if the survey is open -->
         <a th:if="!${survey.isClosed}" th:href="@{/survey/fill(surveyId=${survey.id})}">Participate</a>
+        <!-- Link for the survey creator to view the survey results -->
+        <!-- Must be updated later as now we are checking with the survey results -->
+        <a th:if="${user} == ${survey.creator.username}" th:href="@{/results/{surveyId}(surveyId=${survey.id})}">View Results</a>
     </li>
 </ul>
 </body>
