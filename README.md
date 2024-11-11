@@ -31,11 +31,13 @@ In the next sprint, we aim to implement:
 ## Database Schema
 Below is the current schema of the database, providing an overview of the application's structure and relationships.
 
+![Database Schema](docs/Relational%20Database%20Schema.jpeg)
 
 ## Class Diagram
 The following UML class diagram represents the model structure for the Mini Survey Monkey app:
 ![image](https://github.com/user-attachments/assets/deb9bcac-1a73-46e2-bb39-97fa3c2537d7)
 
+![Database Schema](docs/UML%20Class%20Diagram.jpeg)
 
 ## How to Run the Project
 1. Clone the repository:
