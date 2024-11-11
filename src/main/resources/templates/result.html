@@ -3,18 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>Survey Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 <div class="container mt-3">
     <!-- Displaying the Survey Title -->
+    <h3 th:text="'Survey Results: ' + ${survey}"></h3>
     <h3 th:text="'Survey Results: ' + ${survey.title}"></h3>
     <hr>
 
-    <!-- Displaying the Survey Questions -->
+    <!-- Displaying the Survey Questions and Responses -->
     <div th:each="question, iterator : ${survey.questions}">
         <!-- Displaying question number and text -->
-        <p th:text="'Question ' + ${iterator.count} + ': ' + ${question.text}"></p>
+        <p th:utext="'<b>Question ' + ${iterator.count} + ':</b> ' + ${question.text}"></p>
+        <h3 th:text="'Survey Results: ' + ${question.type}"></h3>
+        <!-- Displaying responses based on question type -->
+        <div th:switch="${question.type}">
+
+            <!-- Handling Open-Ended Questions -->
+            <div th:case="'OPEN_ENDED'">
+                <ul>
+                    <li th:each="response : ${question.responses}" th:text="${response.textResponse}"></li>
+                </ul>
+            </div>
+
+            <!-- Handling Number Range Questions (Bar Chart) -->
+            <div th:case="'NUMBER_RANGE'">
+                <div style="width: 500px">
+                    <canvas th:id="'barChart' + ${iterator.index}"></canvas>
+                </div>
+                <script th:inline="javascript">
+                    // Prepare data for the number range chart
+                    const responses = /*[[${question.responses}]]*/ [];
+                    const values = responses.map(response => response.numberResponse);
+                    const labels = values.map((_, i) => `Response ${i + 1}`);
+
+                    const ctx = document.getElementById('barChart' + /*[(${iterator.index})]*/ '').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Number Responses',
+                                data: values,
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <!-- Handling Multiple Choice Questions (Pie Chart) -->
+            <div th:case="'MULTIPLE_CHOICE'">
+                <div style="width: 300px">
+                    <canvas th:id="'pieChart' + ${iterator.index}"></canvas>
+                </div>
+                <script th:inline="javascript">
+                    // Prepare data for the multiple choice chart
+                    const choiceResponses = /*[[${question.responses}]]*/ [];
+                    const choiceCounts = {};
+
+                    // Aggregate choices
+                    choiceResponses.forEach(response => {
+                        const choice = response.choiceResponse;
+                        if (choice) {
+                            choiceCounts[choice] = (choiceCounts[choice] || 0) + 1;
+                        }
+                    });
+
+                    const choiceLabels = Object.keys(choiceCounts);
+                    const choiceValues = Object.values(choiceCounts);
+                    const pieCtx = document.getElementById('pieChart' + /*[(${iterator.index})]*/ '').getContext('2d');
+
+                    new Chart(pieCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: choiceLabels,
+                            datasets: [{
+                                data: choiceValues,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.7)',
+                                    'rgba(54, 162, 235, 0.7)',
+                                    'rgba(255, 206, 86, 0.7)',
+                                    'rgba(75, 192, 192, 0.7)',
+                                    'rgba(153, 102, 255, 0.7)',
+                                    'rgba(255, 159, 64, 0.7)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
     </div>
 </div>
 </body>

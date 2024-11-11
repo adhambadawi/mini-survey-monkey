@@ -23,7 +23,7 @@
         <span th:text="${survey.title}"></span> -
         <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span>
         <!-- Link to participate if the survey is open -->
-        <a th:if="!${survey.isClosed}" th:href="@{/survey/{id}/participate(id=${survey.id})}">Participate</a>
+        <a th:if="!${survey.isClosed}" th:href="@{/survey/fill(surveyId=${survey.id})}">Participate</a>
     </li>
 </ul>
 </body>
