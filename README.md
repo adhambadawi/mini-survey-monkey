@@ -34,6 +34,7 @@ Below is the current schema of the database, providing an overview of the applic
 
 ## Class Diagram
 The following UML class diagram represents the model structure for the Mini Survey Monkey app:
+![image](https://github.com/user-attachments/assets/deb9bcac-1a73-46e2-bb39-97fa3c2537d7)
 
 
 ## How to Run the Project
