@@ -6,15 +6,11 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<!-- Include Header -->
+<div th:replace="~{header :: header}"></div>
+
 <h1>Welcome to the Survey Application</h1>
-<p th:if="${user != null}">
-    Logged in as <strong th:text="${user}"></strong> |
-    <a th:href="@{/logout}">Logout</a>
-</p>
-<p th:if="${user == null}">
-    <a th:href="@{/login}">Login</a> |
-    <a th:href="@{/register}">Register</a>
-</p>
+
 <a th:href="@{/survey/new}">Create a Survey</a>
 
 <h2>Available Surveys</h2>
@@ -23,10 +19,9 @@
         <span th:text="${survey.title}"></span> -
         <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span>
         <!-- Link to participate if the survey is open -->
-        <a th:if="!${survey.isClosed}" th:href="@{/survey/fill(surveyId=${survey.id})}">Participate</a>
+        <a th:if="!${survey.isClosed}" th:href="@{/survey/{id}/participate(id=${survey.id})}">Participate</a>
         <!-- Link for the survey creator to view the survey results -->
-        <!-- Must be updated later as now we are checking with the survey results -->
-        <a th:if="${user} == ${survey.creator.username}" th:href="@{/results/{surveyId}(surveyId=${survey.id})}">View Results</a>
+        <a th:if="${#authentication.name == survey.creator.username}" th:href="@{/survey/{id}/results(id=${survey.id})}">View Results</a>
     </li>
 </ul>
 </body>

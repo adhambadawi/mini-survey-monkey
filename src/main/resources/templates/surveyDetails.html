@@ -5,6 +5,8 @@
     <title>Survey Details</title>
 </head>
 <body>
+<div th:replace="~{header :: header}"></div>
+
 <h1 th:text="${survey.title}">Survey Title</h1>
 <p>Status: <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span></p>
 

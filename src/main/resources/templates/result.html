@@ -8,6 +8,9 @@
 </head>
 
 <body>
+<div th:replace="~{header :: header}"></div>
+<h1 th:text="'Results for: ' + ${survey.title}">Survey Results</h1>
+
 <div class="container mt-3">
     <!-- Survey Title -->
     <h3 th:text="'Survey Title: ' + ${survey.title}"></h3>
