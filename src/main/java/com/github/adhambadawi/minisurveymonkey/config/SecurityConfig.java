@@ -52,11 +52,13 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/survey/*/participate"),
                                 new AntPathRequestMatcher("/survey/*/submit"),
-                                new AntPathRequestMatcher("/api/response/**")
+                                new AntPathRequestMatcher("/api/response/**"),
+                                new AntPathRequestMatcher("/api/surveys/**")
                         ).permitAll()
                         .requestMatchers(
                                 new AntPathRequestMatcher("/survey/new"),
-                                new AntPathRequestMatcher("/survey/*/close")
+                                new AntPathRequestMatcher("/survey/*/close"),
+                                new AntPathRequestMatcher("/survey/*/results")
                         ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
@@ -66,6 +68,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
         return http.build();

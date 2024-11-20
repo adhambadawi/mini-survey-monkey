@@ -1,113 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Mini-SurveyMonkey</title>
+  <title th:text="${survey.title}">Mini-SurveyMonkey</title>
+  <meta charset="UTF-8">
   <!-- CSRF Token -->
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <script>
-        let currentQuestionIndex = 0;
-        let surveyData = { questions: [] };
+  <script th:inline="javascript">
+    let currentQuestionIndex = 0;
+    let surveyData = { questions: [] };
+    let surveyId = [[${surveyId}]];
 
-        async function loadSurvey(surveyId) {
-            try {
-                const response = await fetch(`/api/surveys/${surveyId}`);
-                surveyData = await response.json();
-                document.getElementById("surveyTitle").innerText = surveyData.title;
-                renderQuestion(0);
-            } catch (error) {
-                console.error("Error loading survey:", error);
-                alert("Failed to load survey. Please try again.");
-            }
+    async function loadSurvey(surveyId) {
+      try {
+        const response = await fetch(`/api/surveys/${surveyId}`);
+        surveyData = await response.json();
+        document.getElementById("surveyTitle").innerText = surveyData.title;
+        renderQuestion(0);
+      } catch (error) {
+        console.error("Error loading survey:", error);
+        alert("Failed to load survey. Please try again.");
+      }
+    }
+
+    function renderQuestion(index) {
+      if (index < 0 || index >= surveyData.questions.length) return;
+      currentQuestionIndex = index;
+
+      const question = surveyData.questions[currentQuestionIndex];
+      document.getElementById("questionText").innerText = question.text;
+
+      const textInput = document.getElementById("textResponseInput");
+      const numberInput = document.getElementById("numberResponseInput");
+
+      if (question.type === 'OPEN_ENDED') {
+        textInput.style.display = 'block';
+        numberInput.style.display = 'none';
+        textInput.value = question.textResponse || '';
+      } else if (question.type === 'NUMBER_RANGE') {
+        textInput.style.display = 'none';
+        numberInput.style.display = 'block';
+        numberInput.value = question.numberResponse || '';
+        numberInput.min = question.minValue;
+        numberInput.max = question.maxValue;
+      }
+    }
+
+    function saveAnswer() {
+      const question = surveyData.questions[currentQuestionIndex];
+      if (question.type === 'OPEN_ENDED') {
+        question.textResponse = document.getElementById("textResponseInput").value;
+      } else if (question.type === 'NUMBER_RANGE') {
+        question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
+      }
+    }
+
+    function nextQuestion() {
+      saveAnswer();
+      renderQuestion(currentQuestionIndex + 1);
+    }
+
+    function previousQuestion() {
+      saveAnswer();
+      renderQuestion(currentQuestionIndex - 1);
+    }
+
+    async function submitSurvey() {
+      saveAnswer();
+      // Retrieve CSRF token and header name from meta tags
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      for (const question of surveyData.questions) {
+        const responsePayload = {
+          textResponse: question.textResponse,
+          numberResponse: question.numberResponse
+        };
+
+        try {
+          const response = await fetch(`/api/response/${question.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              [csrfHeaderName]: csrfToken
+            },
+            body: JSON.stringify(responsePayload)
+          });
+          if (!response.ok) {
+            alert(`Failed to submit response for question ID ${question.id}`);
+            return;
+          }
+        } catch (error) {
+          console.error("Error submitting response:", error);
+          alert(`Error submitting response for question ID ${question.id}`);
+          return;
         }
+      }
+      alert("All responses submitted successfully!");
+    }
 
-        function renderQuestion(index) {
-            if (index < 0 || index >= surveyData.questions.length) return;
-            currentQuestionIndex = index;
-
-            const question = surveyData.questions[currentQuestionIndex];
-            document.getElementById("questionText").innerText = question.text;
-
-            const textInput = document.getElementById("textResponseInput");
-            const numberInput = document.getElementById("numberResponseInput");
-
-            if (question.type === 'OPEN_ENDED') {
-                textInput.style.display = 'block';
-                numberInput.style.display = 'none';
-                textInput.value = question.textResponse || '';
-            } else if (question.type === 'NUMBER_RANGE') {
-                textInput.style.display = 'none';
-                numberInput.style.display = 'block';
-                numberInput.value = question.numberResponse || '';
-                numberInput.min = question.minValue;
-                numberInput.max = question.maxValue;
-            }
-        }
-
-        function saveAnswer() {
-            const question = surveyData.questions[currentQuestionIndex];
-            if (question.type === 'OPEN_ENDED') {
-                question.textResponse = document.getElementById("textResponseInput").value;
-            } else if (question.type === 'NUMBER_RANGE') {
-                question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
-            }
-        }
-
-        function nextQuestion() {
-            saveAnswer();
-            renderQuestion(currentQuestionIndex + 1);
-        }
-
-        function previousQuestion() {
-            saveAnswer();
-            renderQuestion(currentQuestionIndex - 1);
-        }
-
-        async function submitSurvey() {
-            saveAnswer();
-            // Retrieve CSRF token and header name from meta tags
-            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-            for (const question of surveyData.questions) {
-                const responsePayload = {
-                    textResponse: question.textResponse,
-                    numberResponse: question.numberResponse
-                };
-
-                try {
-                    const response = await fetch(`/api/response/${question.id}`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          [csrfHeaderName]: csrfToken
-                        },
-                        body: JSON.stringify(responsePayload)
-                    });
-                    if (!response.ok) {
-                        alert(`Failed to submit response for question ID ${question.id}`);
-                        return;
-                    }
-                } catch (error) {
-                    console.error("Error submitting response:", error);
-                    alert(`Error submitting response for question ID ${question.id}`);
-                    return;
-                }
-            }
-            alert("All responses submitted successfully!");
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const surveyId = new URLSearchParams(window.location.search).get("surveyId");
-            if (surveyId) {
-                loadSurvey(surveyId);
-            } else {
-                alert("Survey ID not provided.");
-            }
-        });
-    </script>
+    document.addEventListener("DOMContentLoaded", function() {
+      loadSurvey(surveyId);
+    });
+  </script>
 </head>
 <body>
+<div th:replace="~{header :: header}"></div>
 <h1 id="surveyTitle">Loading survey...</h1>
 
 <div>
