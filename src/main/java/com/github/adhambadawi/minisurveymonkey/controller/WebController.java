@@ -69,6 +69,10 @@ public class WebController {
         Optional<Survey> optionalSurvey = surveyService.getSurveyById(id);
         if (optionalSurvey.isPresent()) {
             Survey survey = optionalSurvey.get();
+            if (survey.isClosed()) {
+                model.addAttribute("message", "This survey has been closed and is no longer accepting responses.");
+                return "surveyClosed"; // Create a template to display this message
+            }
             model.addAttribute("surveyId", id);
             model.addAttribute("survey", survey);
             return "fillSurvey";
@@ -105,6 +109,7 @@ public class WebController {
             // Check if the authenticated user is the creator of the survey
             if (authentication != null && authentication.getName().equals(survey.getCreator().getUsername())) {
                 surveyService.closeSurvey(id);
+                return "redirect:/?surveyClosed=true";
             }
         }
         return "redirect:/";
@@ -121,5 +126,33 @@ public class WebController {
         } else {
             return "redirect:/";
         }
+    }
+
+    @PostMapping("/survey/{id}/reopen")
+    public String reopenSurvey(@PathVariable Long id, Authentication authentication) {
+        Optional<Survey> optionalSurvey = surveyService.getSurveyById(id);
+        if (optionalSurvey.isPresent()) {
+            Survey survey = optionalSurvey.get();
+            // Check if the authenticated user is the creator of the survey
+            if (authentication != null && authentication.getName().equals(survey.getCreator().getUsername())) {
+                surveyService.reopenSurvey(id);
+                return "redirect:/?surveyReopened=true";
+            }
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping("/survey/{id}/delete")
+    public String deleteSurvey(@PathVariable Long id, Authentication authentication) {
+        Optional<Survey> optionalSurvey = surveyService.getSurveyById(id);
+        if (optionalSurvey.isPresent()) {
+            Survey survey = optionalSurvey.get();
+            // Check if the authenticated user is the creator of the survey
+            if (authentication != null && authentication.getName().equals(survey.getCreator().getUsername())) {
+                surveyService.deleteSurvey(id);
+                return "redirect:/?surveyDeleted=true";
+            }
+        }
+        return "redirect:/";
     }
 }

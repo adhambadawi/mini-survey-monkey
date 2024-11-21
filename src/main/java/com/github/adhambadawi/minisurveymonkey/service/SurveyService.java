@@ -55,4 +55,13 @@ public class SurveyService {
             surveyRepository.save(survey);
         }
     }
+
+    public void reopenSurvey(Long id) {
+        Optional<Survey> optionalSurvey = surveyRepository.findById(id);
+        if (optionalSurvey.isPresent()) {
+            Survey survey = optionalSurvey.get();
+            survey.setClosed(false);
+            surveyRepository.save(survey);
+        }
+    }
 }

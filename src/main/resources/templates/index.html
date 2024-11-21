@@ -13,6 +13,21 @@
 
 <a th:href="@{/survey/new}">Create a Survey</a>
 
+<!-- Display confirmation message -->
+<div th:if="${param.surveyClosed}">
+    <p>Survey has been successfully closed.</p>
+</div>
+
+<!-- Display confirmation message for survey reopened -->
+<div th:if="${param.surveyReopened}">
+    <p>Survey has been successfully reopened.</p>
+</div>
+
+<!-- Display confirmation message for survey deleted -->
+<div th:if="${param.surveyDeleted}">
+    <p>Survey has been successfully deleted.</p>
+</div>
+
 <h2>Available Surveys</h2>
 <ul>
     <li th:each="survey : ${surveys}">
@@ -22,6 +37,47 @@
         <a th:if="!${survey.isClosed}" th:href="@{/survey/{id}/participate(id=${survey.id})}">Participate</a>
         <!-- Link for the survey creator to view the survey results -->
         <a th:if="${#authentication.name == survey.creator.username}" th:href="@{/survey/{id}/results(id=${survey.id})}">View Results</a>
+        <!-- Button for the survey creator to close the survey -->
+        <form th:if="${#authentication.name == survey.creator.username} and !${survey.isClosed}"
+              th:action="@{/survey/{id}/close(id=${survey.id})}" method="post" style="display:inline;"
+              onsubmit="return confirmCloseSurvey();">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Close Survey</button>
+        </form>
+
+        <script>
+            function confirmCloseSurvey() {
+                return confirm("Are you sure you want to close the survey? After closing the survey, no other users will be able to participate unless the survey is reopened.");
+            }
+        </script>
+
+        <!-- Button for the survey creator to reopen the survey -->
+        <form th:if="${#authentication.name == survey.creator.username} and ${survey.isClosed}"
+              th:action="@{/survey/{id}/reopen(id=${survey.id})}" method="post" style="display:inline;"
+              onsubmit="return confirmReopenSurvey();">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Reopen Survey</button>
+        </form>
+
+        <script>
+            function confirmReopenSurvey() {
+                return confirm("Are you sure you want to reopen the survey? Users will be able to participate again.");
+            }
+        </script>
+
+        <!-- Button for the survey creator to delete the survey -->
+        <form th:if="${#authentication.name == survey.creator.username}"
+              th:action="@{/survey/{id}/delete(id=${survey.id})}" method="post" style="display:inline;"
+              onsubmit="return confirmDeleteSurvey();">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Delete Survey</button>
+        </form>
+
+        <script>
+            function confirmDeleteSurvey() {
+                return confirm("Are you sure you want to delete the survey? This action cannot be undone.");
+            }
+        </script>
     </li>
 </ul>
 </body>

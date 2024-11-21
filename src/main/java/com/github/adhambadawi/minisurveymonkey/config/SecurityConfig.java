@@ -58,7 +58,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 new AntPathRequestMatcher("/survey/new"),
                                 new AntPathRequestMatcher("/survey/*/close"),
-                                new AntPathRequestMatcher("/survey/*/results")
+                                new AntPathRequestMatcher("/survey/*/results"),
+                                new AntPathRequestMatcher("/survey/*/reopen"),
+                                new AntPathRequestMatcher("/survey/*/delete")
                         ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
