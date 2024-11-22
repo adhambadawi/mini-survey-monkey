@@ -18,7 +18,7 @@ public class User {
     private String role = "ROLE_USER";
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "creator", orphanRemoval = true)
     private List<Survey> surveys = new ArrayList<>();
 
     public User() {}

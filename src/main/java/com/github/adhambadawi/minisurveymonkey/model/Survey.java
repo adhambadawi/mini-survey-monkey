@@ -17,7 +17,7 @@ public class Survey {
 
     private boolean isClosed = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User creator;

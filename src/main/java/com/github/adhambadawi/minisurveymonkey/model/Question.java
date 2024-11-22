@@ -25,7 +25,7 @@ public class Question {
     @ElementCollection
     private List<String> options = new ArrayList<>();
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "survey_id")
     @JsonBackReference
     private Survey survey;
