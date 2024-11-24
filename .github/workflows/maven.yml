@@ -1,16 +1,18 @@
-name: Integration Test Workflow
+name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - main
-      - test-integration-workflow-amr
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
-  integration-test:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -31,12 +33,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Run the specific integration test
-        run: mvn -B clean test -Dtest=com.github.adhambadawi.minisurveymonkey.SurveyRepositoryIntegrationTest
-
-      - name: Archive test reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: integration-test-reports
-          path: target/surefire-reports/
+      - name: Build with Maven
+        run: mvn -B clean verify

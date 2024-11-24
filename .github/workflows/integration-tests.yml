@@ -1,10 +1,10 @@
-name: Integration Test Workflow
+name: Integration Tests Workflow
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - test-integration-workflow
 
 permissions:
   contents: read
@@ -31,8 +31,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Run the specific integration test
-        run: mvn -B clean test -Dtest=com.github.adhambadawi.minisurveymonkey.SurveyRepositoryIntegrationTest
+      - name: Run all tests
+        run: mvn -B clean test
 
       - name: Archive test reports
         if: always()
