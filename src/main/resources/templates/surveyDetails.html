@@ -3,27 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Survey Details</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <div th:replace="~{header :: header}"></div>
 
-<h1 th:text="${survey.title}">Survey Title</h1>
-<p>Status: <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span></p>
+<div class="container mt-4">
+    <h1 th:text="${survey.title}">Survey Title</h1>
+    <p>Status: <span th:text="${survey.isClosed} ? 'Closed' : 'Open'"></span></p>
 
-<h2>Questions</h2>
-<ul>
-    <li th:each="question : ${survey.questions}">
-        <span th:text="${question.text}"></span>
-    </li>
-</ul>
+    <h2>Questions</h2>
+    <ul class="list-group">
+        <li th:each="question : ${survey.questions}" class="list-group-item">
+            <span th:text="${question.text}"></span>
+        </li>
+    </ul>
 
-<!-- Only show close button if the survey is open -->
-<form th:if="!${survey.isClosed}" th:action="@{/survey/{id}/close(id=${survey.id})}" method="post">
-    <!-- CSRF Token -->
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-    <button type="submit">Close Survey</button>
-</form>
+    <!-- Only show close button if the survey is open -->
+    <form th:if="!${survey.isClosed}" th:action="@{/survey/{id}/close(id=${survey.id})}" method="post" class="mt-3">
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="btn btn-warning">Close Survey</button>
+    </form>
 
-<a th:href="@{/}">Back to Home</a>
+    <a th:href="@{/}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
