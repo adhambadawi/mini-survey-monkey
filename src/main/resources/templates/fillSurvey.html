@@ -1,121 +1,152 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title th:text="${survey.title}">Mini-SurveyMonkey</title>
+  <!-- Meta tags -->
   <meta charset="UTF-8">
-  <!-- CSRF Token -->
+  <title th:text="${survey.title}">Survey Application</title>
+
+  <!-- CSRF Tokens -->
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-  <script th:inline="javascript">
-    let currentQuestionIndex = 0;
-    let surveyData = { questions: [] };
-    let surveyId = [[${surveyId}]];
 
-    async function loadSurvey(surveyId) {
-      try {
-        const response = await fetch(`/api/surveys/${surveyId}`);
-        surveyData = await response.json();
-        document.getElementById("surveyTitle").innerText = surveyData.title;
-        renderQuestion(0);
-      } catch (error) {
-        console.error("Error loading survey:", error);
-        alert("Failed to load survey. Please try again.");
-      }
-    }
-
-    function renderQuestion(index) {
-      if (index < 0 || index >= surveyData.questions.length) return;
-      currentQuestionIndex = index;
-
-      const question = surveyData.questions[currentQuestionIndex];
-      document.getElementById("questionText").innerText = question.text;
-
-      const textInput = document.getElementById("textResponseInput");
-      const numberInput = document.getElementById("numberResponseInput");
-
-      if (question.type === 'OPEN_ENDED') {
-        textInput.style.display = 'block';
-        numberInput.style.display = 'none';
-        textInput.value = question.textResponse || '';
-      } else if (question.type === 'NUMBER_RANGE') {
-        textInput.style.display = 'none';
-        numberInput.style.display = 'block';
-        numberInput.value = question.numberResponse || '';
-        numberInput.min = question.minValue;
-        numberInput.max = question.maxValue;
-      }
-    }
-
-    function saveAnswer() {
-      const question = surveyData.questions[currentQuestionIndex];
-      if (question.type === 'OPEN_ENDED') {
-        question.textResponse = document.getElementById("textResponseInput").value;
-      } else if (question.type === 'NUMBER_RANGE') {
-        question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
-      }
-    }
-
-    function nextQuestion() {
-      saveAnswer();
-      renderQuestion(currentQuestionIndex + 1);
-    }
-
-    function previousQuestion() {
-      saveAnswer();
-      renderQuestion(currentQuestionIndex - 1);
-    }
-
-    async function submitSurvey() {
-      saveAnswer();
-      // Retrieve CSRF token and header name from meta tags
-      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-      const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-      for (const question of surveyData.questions) {
-        const responsePayload = {
-          textResponse: question.textResponse,
-          numberResponse: question.numberResponse
-        };
-
-        try {
-          const response = await fetch(`/api/response/${question.id}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              [csrfHeaderName]: csrfToken
-            },
-            body: JSON.stringify(responsePayload)
-          });
-          if (!response.ok) {
-            alert(`Failed to submit response for question ID ${question.id}`);
-            return;
-          }
-        } catch (error) {
-          console.error("Error submitting response:", error);
-          alert(`Error submitting response for question ID ${question.id}`);
-          return;
-        }
-      }
-      alert("All responses submitted successfully!");
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      loadSurvey(surveyId);
-    });
-  </script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
 <div th:replace="~{header :: header}"></div>
-<h1 id="surveyTitle">Loading survey...</h1>
 
-<div>
-  <p id="questionText"></p>
-  <input type="text" id="textResponseInput" style="display: none;" />
-  <input type="number" id="numberResponseInput" min="1" max="10" style="display: none;" />
+<div class="container mt-4">
+  <h1 id="surveyTitle">Loading survey...</h1>
+
+  <div class="card">
+    <div class="card-body">
+      <p id="questionText" class="h5"></p>
+
+      <!-- Text Response Input -->
+      <div id="textResponseInputContainer" class="mb-3" style="display: none;">
+        <input type="text" id="textResponseInput" class="form-control"/>
+      </div>
+
+      <!-- Number Response Input -->
+      <div id="numberResponseInputContainer" class="mb-3" style="display: none;">
+        <input type="number" id="numberResponseInput" class="form-control"/>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" onclick="previousQuestion()">Previous</button>
+        <button type="button" class="btn btn-secondary" onclick="nextQuestion()">Next</button>
+        <button type="button" class="btn btn-primary" onclick="submitSurvey()">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<button type="button" onclick="previousQuestion()">Previous</button>
-<button type="button" onclick="nextQuestion()">Next</button>
-<button type="button" onclick="submitSurvey()">Submit</button>
+<!-- Bootstrap JS (No jQuery required) -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Survey JavaScript -->
+<script th:inline="javascript">
+  let currentQuestionIndex = 0;
+  let surveyData = {questions: []};
+  let surveyId = /*[[${surveyId}]]*/ 0;
+
+  async function loadSurvey(surveyId) {
+    try {
+      const response = await fetch(`/api/surveys/${surveyId}`);
+      surveyData = await response.json();
+      document.getElementById("surveyTitle").innerText = surveyData.title;
+      renderQuestion(0);
+    } catch (error) {
+      console.error("Error loading survey:", error);
+      alert("Failed to load survey. Please try again.");
+    }
+  }
+
+  function renderQuestion(index) {
+    if (index < 0 || index >= surveyData.questions.length) return;
+    currentQuestionIndex = index;
+
+    const question = surveyData.questions[currentQuestionIndex];
+    document.getElementById("questionText").innerText = question.text;
+
+    const textInputContainer = document.getElementById("textResponseInputContainer");
+    const numberInputContainer = document.getElementById("numberResponseInputContainer");
+    const textInput = document.getElementById("textResponseInput");
+    const numberInput = document.getElementById("numberResponseInput");
+
+    if (question.type === 'OPEN_ENDED') {
+      textInputContainer.style.display = 'block';
+      numberInputContainer.style.display = 'none';
+      textInput.value = question.textResponse || '';
+    } else if (question.type === 'NUMBER_RANGE') {
+      textInputContainer.style.display = 'none';
+      numberInputContainer.style.display = 'block';
+      numberInput.value = question.numberResponse || '';
+      numberInput.min = question.minValue;
+      numberInput.max = question.maxValue;
+    }
+  }
+
+  function saveAnswer() {
+    const question = surveyData.questions[currentQuestionIndex];
+    if (question.type === 'OPEN_ENDED') {
+      question.textResponse = document.getElementById("textResponseInput").value;
+    } else if (question.type === 'NUMBER_RANGE') {
+      question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
+    }
+  }
+
+  function nextQuestion() {
+    saveAnswer();
+    renderQuestion(currentQuestionIndex + 1);
+  }
+
+  function previousQuestion() {
+    saveAnswer();
+    renderQuestion(currentQuestionIndex - 1);
+  }
+
+  async function submitSurvey() {
+    saveAnswer();
+    // Retrieve CSRF token and header name from meta tags
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    for (const question of surveyData.questions) {
+      const responsePayload = {
+        textResponse: question.textResponse,
+        numberResponse: question.numberResponse
+      };
+
+      try {
+        const response = await fetch(`/api/response/${question.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfHeaderName]: csrfToken
+          },
+          body: JSON.stringify(responsePayload)
+        });
+        if (!response.ok) {
+          alert(`Failed to submit response for question ID ${question.id}`);
+          return;
+        }
+      } catch (error) {
+        console.error("Error submitting response:", error);
+        alert(`Error submitting response for question ID ${question.id}`);
+        return;
+      }
+    }
+    alert("All responses submitted successfully!");
+    window.location.href = '/'; // Redirect to home page after submission
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadSurvey(surveyId);
+  });
+</script>
 </body>
 </html>

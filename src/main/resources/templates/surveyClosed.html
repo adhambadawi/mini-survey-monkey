@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Survey Closed</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <!-- Include Header -->
 <div th:replace="~{header :: header}"></div>
 
-<h1>Survey Closed</h1>
-<p th:text="${message}"></p>
-<a th:href="@{/}">Back to Home</a>
+<div class="container mt-4">
+    <h1>Survey Closed</h1>
+    <p th:text="${message}"></p>
+    <a th:href="@{/}" class="btn btn-primary">Back to Home</a>
+</div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

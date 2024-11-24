@@ -3,39 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Survey Results</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 <div th:replace="~{header :: header}"></div>
-<h1 th:text="'Results for: ' + ${survey.title}">Survey Results</h1>
 
-<div class="container mt-3">
-    <!-- Survey Title -->
-    <h3 th:text="'Survey Title: ' + ${survey.title}"></h3>
+<div class="container mt-4">
+    <h1 th:text="'Results for: ' + ${survey.title}">Survey Results</h1>
     <hr>
 
     <!-- Iterating over questions -->
     <div th:each="question, iterator : ${survey.questions}">
+        <!-- Question Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong th:text="'Question ' + ${iterator.count} + ':'"></strong> <span th:text="${question.text}"></span>
+            </div>
+            <div class="card-body">
+                <!-- Open-Ended Questions: Display list of responses -->
+                <div th:if="${question.type.toString() == 'OPEN_ENDED'}">
+                    <h5>Responses:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="response : ${question.responses}" th:text="${response.textResponse}"></li>
+                    </ul>
+                </div>
 
-        <!-- Displaying questions name -->
-        <p th:utext="'<b>Question ' + ${iterator.count} + ':</b> ' + ${question.text}"></p>
-
-        <!-- Open-Ended Questions: Display list of responses -->
-        <div th:if="${question.type.toString() == 'OPEN_ENDED'}">
-            <p>Responses:</p>
-            <ul>
-                <li th:each="response : ${question.responses}" th:text="${response.textResponse}"></li>
-            </ul>
+                <!-- Number Range Questions: Display bar chart -->
+                <div th:if="${question.type.toString() == 'NUMBER_RANGE'}">
+                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                        <canvas th:id="'histogramChart' + ${iterator.index}"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Number Range Questions: Display bar chart -->
+        <!-- Chart.js Script for Number Range Questions -->
         <div th:if="${question.type.toString() == 'NUMBER_RANGE'}">
-            <div style="width: 500px;">
-                <canvas th:id="'histogramChart' + ${iterator.index}" width="100px" height="50px"></canvas>
-            </div>
-
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 (function() {
@@ -76,14 +87,6 @@
                                     position: 'top'
                                 }
                             },
-                            layout: {
-                                padding: {
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0
-                                }
-                            },
                             scales: {
                                 x: {
                                     title: {
@@ -105,9 +108,10 @@
                 /*]]>*/
             </script>
         </div>
-
-        <hr>
     </div>
 </div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
