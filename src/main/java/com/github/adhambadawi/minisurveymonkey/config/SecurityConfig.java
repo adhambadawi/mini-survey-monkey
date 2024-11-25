@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/api/surveys/**")
+                                new AntPathRequestMatcher("/api/surveys/**"),
+                                new AntPathRequestMatcher("/api/response/**")
                         )
                 )
                 .headers(headers -> headers

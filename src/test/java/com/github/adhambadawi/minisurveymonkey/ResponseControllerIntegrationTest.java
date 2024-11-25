@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,17 +38,19 @@ public class ResponseControllerIntegrationTest {
         responseRepository.deleteAll();
         questionRepository.deleteAll();
     }
-/**
+
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     void testCreateTextResponse() throws Exception {
+        Question question = new Question("Text question", QuestionType.OPEN_ENDED);
+        Question savedQuestion = questionRepository.save(question);
         String responseJson = """
         {
             "textResponse": "My text response"
         }
     """;
 
-        mockMvc.perform(post("/api/response/1")
+        mockMvc.perform(post("/api/response/" + savedQuestion.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(responseJson))
                 .andExpect(status().isOk())
@@ -57,13 +62,16 @@ public class ResponseControllerIntegrationTest {
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     void testCreateNumberResponse() throws Exception {
+        Question question = new Question("Number range question", QuestionType.NUMBER_RANGE);
+        Question savedQuestion = questionRepository.save(question);
+
         String responseJson = """
         {
             "numberResponse": 5
         }
     """;
 
-        mockMvc.perform(post("/api/response/1")
+        mockMvc.perform(post("/api/response/" + savedQuestion.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(responseJson))
                 .andExpect(status().isOk())
@@ -75,13 +83,16 @@ public class ResponseControllerIntegrationTest {
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     void testCreateChoiceResponse() throws Exception {
+        Question question = new Question("Multiple choice question", QuestionType.MULTIPLE_CHOICE);
+        Question savedQuestion = questionRepository.save(question);
+
         String responseJson = """
         {
             "choiceResponse": "My choice response"
         }
     """;
 
-        mockMvc.perform(post("/api/response/1")
+        mockMvc.perform(post("/api/response/" + savedQuestion.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(responseJson))
                 .andExpect(status().isOk())
@@ -89,7 +100,7 @@ public class ResponseControllerIntegrationTest {
 
         assertEquals(1, responseRepository.count());
     }
-*/
+
     @Test
     void testGetTextResponse() throws Exception {
         Response response = new Response();
