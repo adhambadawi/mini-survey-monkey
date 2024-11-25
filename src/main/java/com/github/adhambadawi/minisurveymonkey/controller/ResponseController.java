@@ -5,9 +5,12 @@ import com.github.adhambadawi.minisurveymonkey.model.Response;
 import com.github.adhambadawi.minisurveymonkey.service.QuestionService;
 import com.github.adhambadawi.minisurveymonkey.service.ResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/response")
@@ -19,10 +22,44 @@ public class ResponseController {
     private QuestionService questionService;
 
     @PostMapping("/{questionId}")
-    public Response create(@PathVariable Long questionId, @RequestBody Response response) {
-        Question question = questionService.get(questionId).get();
+    public ResponseEntity<?> create(@PathVariable Long questionId, @RequestBody Map<String, Object> payload) {
+        Optional<Question> optionalQuestion = questionService.get(questionId);
+        if (!optionalQuestion.isPresent()) {
+            return ResponseEntity.badRequest().body("Invalid question ID");
+        }
+
+        Question question = optionalQuestion.get();
+        Response response = new Response();
         response.setQuestion(question);
-        return responseService.create(response);
+
+        String type = question.getType().toString();
+        if ("OPEN_ENDED".equals(type)) {
+            String textResponse = (String) payload.get("textResponse");
+            if (textResponse == null || textResponse.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Text response is required");
+            }
+            response.setTextResponse(textResponse);
+        } else if ("NUMBER_RANGE".equals(type)) {
+            Integer numberResponse = (Integer) payload.get("numberResponse");
+            if (numberResponse == null) {
+                return ResponseEntity.badRequest().body("Number response is required");
+            }
+            if (numberResponse < question.getMinValue() || numberResponse > question.getMaxValue()) {
+                return ResponseEntity.badRequest().body("Number response is out of allowed range");
+            }
+            response.setNumberResponse(numberResponse);
+        }
+        // Handle MCQ responses
+        // else if ("MULTIPLE_CHOICE".equals(type)) {
+        //     String selectedOption = (String) payload.get("selectedOption");
+        //     if (selectedOption == null || selectedOption.trim().isEmpty()) {
+        //         return ResponseEntity.badRequest().body("An option must be selected");
+        //     }
+        //     response.setSelectedOption(selectedOption);
+        // }
+
+        Response savedResponse = responseService.create(response);
+        return ResponseEntity.ok(savedResponse);
     }
 
     @GetMapping("/{id}")

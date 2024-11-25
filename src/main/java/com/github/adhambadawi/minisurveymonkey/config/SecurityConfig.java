@@ -38,8 +38,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/api/surveys/**"),
-                                new AntPathRequestMatcher("/api/response/**")
+                                new AntPathRequestMatcher("/api/**")
                         )
                 )
                 .headers(headers -> headers
@@ -47,24 +46,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/register"),
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/css/**"),
                                 new AntPathRequestMatcher("/js/**"),
-                                new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/survey/*/participate"),
-                                new AntPathRequestMatcher("/survey/*/submit"),
-                                new AntPathRequestMatcher("/api/response/**"),
-                                new AntPathRequestMatcher("/api/surveys/**")
+                                new AntPathRequestMatcher("/h2-console/**")
                         ).permitAll()
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/survey/new"),
-                                new AntPathRequestMatcher("/survey/*/close"),
-                                new AntPathRequestMatcher("/survey/*/results"),
-                                new AntPathRequestMatcher("/survey/*/reopen"),
-                                new AntPathRequestMatcher("/survey/*/delete")
-                        ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
