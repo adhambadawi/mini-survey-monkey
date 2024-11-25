@@ -3,32 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Survey</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/public/survey.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
 <body>
-
 <div th:replace="~{header :: header}"></div>
 
-<h1>Create Survey</h1>
+<div class="container mt-4">
+    <h1>Create Survey</h1>
 
+    <form th:action="@{/survey/new}" th:object="${survey}" method="post">
+        <!-- CSRF Token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-<form th:action="@{/survey/new}" th:object="${survey}" method="post">
-    <!-- CSRF Token -->
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-    <label>Survey Title:</label>
-    <br>
-    <input type="text" th:field="*{title}" required /><br><br>
+        <div class="mb-3">
+            <label for="surveyTitle" class="form-label">Survey Title:</label>
+            <input type="text" th:field="*{title}" class="form-control" id="surveyTitle" required />
+        </div>
 
-    <h2>Add Questions</h2>
-    <div id="questions-container">
-        <!-- Add questions using here using js -->
-    </div>
+        <h2>Add Questions</h2>
+        <div id="questions-container">
+            <!-- Questions will be added here using JavaScript -->
+        </div>
 
-    <button type="button" id="add-question">Add Question</button><br><br>
+        <button type="button" id="add-question" class="btn btn-secondary">Add Question</button>
 
-    <button type="submit">Save Survey</button>
-</form>
+        <button type="submit" class="btn btn-primary mt-3">Save Survey</button>
+    </form>
+</div>
 
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<!-- survey.js script -->
+<script th:src="@{/js/survey.js}"></script>
 </body>
 </html>

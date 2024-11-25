@@ -1,9 +1,10 @@
-package com.github.adhambadawi.minisurveymonkey.service;
+package com.github.adhambadawi.minisurveymonkey;
 
 import com.github.adhambadawi.minisurveymonkey.model.Survey;
 import com.github.adhambadawi.minisurveymonkey.model.User;
 import com.github.adhambadawi.minisurveymonkey.repository.SurveyRepository;
 import com.github.adhambadawi.minisurveymonkey.repository.UserRepository;
+import com.github.adhambadawi.minisurveymonkey.service.SurveyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

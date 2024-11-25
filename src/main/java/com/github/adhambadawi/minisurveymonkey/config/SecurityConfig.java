@@ -4,7 +4,6 @@ import com.github.adhambadawi.minisurveymonkey.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -39,9 +38,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/h2-console/**"),
-                                //for now this is the only solution I found for create survey test integration test
-                                // to pass, it shouldn't hurt since http requests are stateless, but we can look into
-                                //other solutions as well.
                                 new AntPathRequestMatcher("/api/surveys/**")
                         )
                 )
