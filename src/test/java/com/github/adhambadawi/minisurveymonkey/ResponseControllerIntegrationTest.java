@@ -63,6 +63,8 @@ public class ResponseControllerIntegrationTest {
     @WithMockUser(username = "testuser", roles = {"USER"})
     void testCreateNumberResponse() throws Exception {
         Question question = new Question("Number range question", QuestionType.NUMBER_RANGE);
+        question.setMinValue(0);
+        question.setMaxValue(10);
         Question savedQuestion = questionRepository.save(question);
 
         String responseJson = """
@@ -102,6 +104,7 @@ public class ResponseControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testGetTextResponse() throws Exception {
         Response response = new Response();
         response.setTextResponse("Example text");
@@ -113,6 +116,7 @@ public class ResponseControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testGetNumberResponse() throws Exception {
         Response response = new Response();
         response.setNumberResponse(5);
@@ -124,6 +128,7 @@ public class ResponseControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testGetChoiceResponse() throws Exception {
         Response response = new Response();
         response.setChoiceResponse("Example choice");
@@ -136,6 +141,7 @@ public class ResponseControllerIntegrationTest {
 
     @Transactional
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testFindResponse() throws Exception {
         Question question = new Question("What is your a name?", QuestionType.OPEN_ENDED);
         Question savedQuestion = questionRepository.save(question);

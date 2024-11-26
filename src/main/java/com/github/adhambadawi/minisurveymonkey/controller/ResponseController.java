@@ -48,15 +48,13 @@ public class ResponseController {
                 return ResponseEntity.badRequest().body("Number response is out of allowed range");
             }
             response.setNumberResponse(numberResponse);
+        } else if ("MULTIPLE_CHOICE".equals(type)) {
+             String selectedOption = (String) payload.get("choiceResponse");
+             if (selectedOption == null || selectedOption.trim().isEmpty()) {
+                 return ResponseEntity.badRequest().body("An option must be selected");
+             }
+             response.setChoiceResponse(selectedOption);
         }
-        // Handle MCQ responses
-        // else if ("MULTIPLE_CHOICE".equals(type)) {
-        //     String selectedOption = (String) payload.get("selectedOption");
-        //     if (selectedOption == null || selectedOption.trim().isEmpty()) {
-        //         return ResponseEntity.badRequest().body("An option must be selected");
-        //     }
-        //     response.setSelectedOption(selectedOption);
-        // }
 
         Response savedResponse = responseService.create(response);
         return ResponseEntity.ok(savedResponse);

@@ -59,6 +59,7 @@ public class SurveyControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testGetSurveyById() throws Exception {
         Survey survey = new Survey("Specific Survey");
         survey = surveyRepository.save(survey); // Save and retrieve the survey ID
@@ -69,6 +70,7 @@ public class SurveyControllerIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void testGetAllSurveys() throws Exception {
         mockMvc.perform(get("/api/surveys"))
                 .andExpect(status().isOk())
