@@ -26,12 +26,20 @@
 
       <!-- Text Response Input -->
       <div id="textResponseInputContainer" class="mb-3" style="display: none;">
-        <input type="text" id="textResponseInput" class="form-control"/>
+        <input type="text" id="textResponseInput" class="form-control" required />
       </div>
 
       <!-- Number Response Input -->
       <div id="numberResponseInputContainer" class="mb-3" style="display: none;">
-        <input type="number" id="numberResponseInput" class="form-control"/>
+        <input type="number" id="numberResponseInput" class="form-control" required />
+        <div class="invalid-feedback">
+          Please enter a value between <span id="minValue"></span> and <span id="maxValue"></span>.
+        </div>
+      </div>
+
+      <!-- MCQ Response Input -->
+      <div id="mcqResponseContainer" class="mb-3" style="display: none;">
+        <!-- Options will be added here dynamically -->
       </div>
 
       <!-- Navigation Buttons -->
@@ -49,10 +57,12 @@
 
 <!-- Survey JavaScript -->
 <script th:inline="javascript">
+  // Declare variables in the global scope
   let currentQuestionIndex = 0;
   let surveyData = {questions: []};
   let surveyId = /*[[${surveyId}]]*/ 0;
 
+  // Define functions in the global scope
   async function loadSurvey(surveyId) {
     try {
       const response = await fetch(`/api/surveys/${surveyId}`);
@@ -72,22 +82,33 @@
     const question = surveyData.questions[currentQuestionIndex];
     document.getElementById("questionText").innerText = question.text;
 
-    const textInputContainer = document.getElementById("textResponseInputContainer");
-    const numberInputContainer = document.getElementById("numberResponseInputContainer");
-    const textInput = document.getElementById("textResponseInput");
-    const numberInput = document.getElementById("numberResponseInput");
+    // Hide all input containers
+    document.getElementById("textResponseInputContainer").style.display = 'none';
+    document.getElementById("numberResponseInputContainer").style.display = 'none';
+    document.getElementById("mcqResponseContainer").style.display = 'none';
 
     if (question.type === 'OPEN_ENDED') {
-      textInputContainer.style.display = 'block';
-      numberInputContainer.style.display = 'none';
+      const textInput = document.getElementById("textResponseInput");
       textInput.value = question.textResponse || '';
+      document.getElementById("textResponseInputContainer").style.display = 'block';
     } else if (question.type === 'NUMBER_RANGE') {
-      textInputContainer.style.display = 'none';
-      numberInputContainer.style.display = 'block';
+      const numberInput = document.getElementById("numberResponseInput");
       numberInput.value = question.numberResponse || '';
       numberInput.min = question.minValue;
       numberInput.max = question.maxValue;
+      numberInput.step = 1;
+      numberInput.required = true;
+
+      // Update min and max values in the invalid-feedback message
+      document.getElementById("minValue").innerText = question.minValue;
+      document.getElementById("maxValue").innerText = question.maxValue;
+
+      document.getElementById("numberResponseInputContainer").style.display = 'block';
     }
+    // handle MCQ implementation here
+    // else if (question.type === 'MULTIPLE_CHOICE') {
+    //     // MCQ handling code
+    // }
   }
 
   function saveAnswer() {
@@ -97,6 +118,7 @@
     } else if (question.type === 'NUMBER_RANGE') {
       question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
     }
+    // Handle MCQ responses if applicable
   }
 
   function nextQuestion() {
@@ -116,10 +138,17 @@
     const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
     for (const question of surveyData.questions) {
-      const responsePayload = {
-        textResponse: question.textResponse,
-        numberResponse: question.numberResponse
-      };
+      const responsePayload = {};
+
+      if (question.type === 'OPEN_ENDED') {
+        responsePayload.textResponse = question.textResponse;
+      } else if (question.type === 'NUMBER_RANGE') {
+        responsePayload.numberResponse = question.numberResponse;
+      }
+      // handle MCQ implementation here
+      // else if (question.type === 'MULTIPLE_CHOICE') {
+      //     responsePayload.selectedOption = question.selectedOption;
+      // }
 
       try {
         const response = await fetch(`/api/response/${question.id}`, {
@@ -131,12 +160,13 @@
           body: JSON.stringify(responsePayload)
         });
         if (!response.ok) {
-          alert(`Failed to submit response for question ID ${question.id}`);
+          const errorText = await response.text();
+          alert(`Error submitting response for question "${question.text}": ${errorText}`);
           return;
         }
       } catch (error) {
         console.error("Error submitting response:", error);
-        alert(`Error submitting response for question ID ${question.id}`);
+        alert(`Error submitting response for question "${question.text}": ${error.message}`);
         return;
       }
     }
@@ -144,6 +174,19 @@
     window.location.href = '/'; // Redirect to home page after submission
   }
 
+  // Event listener for number input validation
+  document.addEventListener('input', function (event) {
+    if (event.target && event.target.id === 'numberResponseInput') {
+      const input = event.target;
+      if (input.validity.rangeUnderflow || input.validity.rangeOverflow) {
+        input.classList.add('is-invalid');
+      } else {
+        input.classList.remove('is-invalid');
+      }
+    }
+  });
+
+  // Load the survey when the DOM is ready
   document.addEventListener("DOMContentLoaded", function () {
     loadSurvey(surveyId);
   });
