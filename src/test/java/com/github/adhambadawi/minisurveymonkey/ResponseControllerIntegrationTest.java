@@ -16,6 +16,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -86,11 +89,16 @@ public class ResponseControllerIntegrationTest {
     @WithMockUser(username = "testuser", roles = {"USER"})
     void testCreateChoiceResponse() throws Exception {
         Question question = new Question("Multiple choice question", QuestionType.MULTIPLE_CHOICE);
+        List<String> options = new ArrayList<>();
+        options.add("Option A");
+        options.add("Option B");
+        options.add("Option C");
+        question.setOptions(options);
         Question savedQuestion = questionRepository.save(question);
 
         String responseJson = """
         {
-            "choiceResponse": "My choice response"
+            "choiceResponse": "Option B"
         }
     """;
 
@@ -98,7 +106,7 @@ public class ResponseControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(responseJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.choiceResponse").value("My choice response"));
+                .andExpect(jsonPath("$.choiceResponse").value("Option B"));
 
         assertEquals(1, responseRepository.count());
     }

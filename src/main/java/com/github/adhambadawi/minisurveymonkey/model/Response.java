@@ -12,8 +12,13 @@ public class Response {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // For OPEN_ENDED questions
     private String textResponse;
+
+    // For NUMBER_RANGE questions
     private Integer numberResponse;
+
+    // For MULTIPLE_CHOICE questions (Single Choice)
     private String choiceResponse;
 
     @ManyToOne(cascade=CascadeType.ALL)

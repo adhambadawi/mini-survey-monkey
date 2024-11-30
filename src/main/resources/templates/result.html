@@ -42,6 +42,13 @@
                         <canvas th:id="'histogramChart' + ${iterator.index}"></canvas>
                     </div>
                 </div>
+
+                <!-- Multiple Choice Questions: Display pie chart -->
+                <div th:if="${question.type.toString() == 'MULTIPLE_CHOICE'}">
+                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                        <canvas th:id="'mcqChart' + ${iterator.index}"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -52,8 +59,6 @@
                 (function() {
                     // Prepare data for the bar chart
                     var responses = /*[[${question.responses}]]*/ [];
-
-                    // Filter non-null numberResponses and count occurrences
                     var map = {};
                     for (var i = 0; i < responses.length; i++) {
                         var value = responses[i].numberResponse;
@@ -61,12 +66,8 @@
                             map[value] = (map[value] || 0) + 1;
                         }
                     }
-
-                    // Extract keys and values for chart
                     var keys = Object.keys(map);
                     var values = Object.values(map);
-
-                    // Render bar chart
                     var ctx = document.getElementById('histogramChart' + /*[[${iterator.index}]]*/ '').getContext('2d');
                     new Chart(ctx, {
                         type: "bar",
@@ -100,6 +101,68 @@
                                         text: 'Frequency'
                                     },
                                     beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })();
+                /*]]>*/
+            </script>
+        </div>
+
+        <!-- Chart.js Script for Multiple Choice Questions -->
+        <div th:if="${question.type.toString() == 'MULTIPLE_CHOICE'}">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                (function() {
+                    // Prepare data for the pie chart
+                    var responses = /*[[${question.responses}]]*/ [];
+                    var options = /*[[${question.options}]]*/ [];
+                    var optionCounts = {};
+                    // Initialize counts
+                    for (var i = 0; i < options.length; i++) {
+                        optionCounts[options[i]] = 0;
+                    }
+                    // Count responses
+                    for (var i = 0; i < responses.length; i++) {
+                        var choice = responses[i].choiceResponse;
+                        if (choice && optionCounts.hasOwnProperty(choice)) {
+                            optionCounts[choice]++;
+                        }
+                    }
+                    var labels = Object.keys(optionCounts);
+                    var data = Object.values(optionCounts);
+                    var ctx = document.getElementById('mcqChart' + /*[[${iterator.index}]]*/ '').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.7)',
+                                    'rgba(54, 162, 235, 0.7)',
+                                    'rgba(255, 206, 86, 0.7)',
+                                    'rgba(75, 192, 192, 0.7)',
+                                    'rgba(153, 102, 255, 0.7)',
+                                    'rgba(255, 159, 64, 0.7)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
                                 }
                             }
                         }

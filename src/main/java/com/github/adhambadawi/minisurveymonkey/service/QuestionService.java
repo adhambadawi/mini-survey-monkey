@@ -12,6 +12,10 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    public Question createQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+
     public Optional<Question> get(Long id) {
         return questionRepository.findById(id);
     }

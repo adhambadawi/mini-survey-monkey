@@ -49,11 +49,17 @@ public class ResponseController {
             }
             response.setNumberResponse(numberResponse);
         } else if ("MULTIPLE_CHOICE".equals(type)) {
-             String selectedOption = (String) payload.get("choiceResponse");
-             if (selectedOption == null || selectedOption.trim().isEmpty()) {
-                 return ResponseEntity.badRequest().body("An option must be selected");
-             }
-             response.setChoiceResponse(selectedOption);
+            String selectedOption = (String) payload.get("choiceResponse");
+            if (selectedOption == null || selectedOption.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("An option must be selected");
+            }
+            // Validate the selected option
+            if (!question.getOptions().contains(selectedOption)) {
+                return ResponseEntity.badRequest().body("Invalid option selected");
+            }
+            response.setChoiceResponse(selectedOption);
+        } else {
+            return ResponseEntity.badRequest().body("Unsupported question type");
         }
 
         Response savedResponse = responseService.create(response);

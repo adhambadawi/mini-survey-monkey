@@ -43,7 +43,7 @@
       </div>
 
       <!-- Navigation Buttons -->
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between mt-3">
         <button type="button" class="btn btn-secondary" onclick="previousQuestion()">Previous</button>
         <button type="button" class="btn btn-secondary" onclick="nextQuestion()">Next</button>
         <button type="button" class="btn btn-primary" onclick="submitSurvey()">Submit</button>
@@ -52,17 +52,15 @@
   </div>
 </div>
 
-<!-- Bootstrap JS (No jQuery required) -->
+<!-- Bootstrap JS -->
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 <!-- Survey JavaScript -->
 <script th:inline="javascript">
-  // Declare variables in the global scope
   let currentQuestionIndex = 0;
   let surveyData = {questions: []};
   let surveyId = /*[[${surveyId}]]*/ 0;
 
-  // Define functions in the global scope
   async function loadSurvey(surveyId) {
     try {
       const response = await fetch(`/api/surveys/${surveyId}`);
@@ -104,11 +102,38 @@
       document.getElementById("maxValue").innerText = question.maxValue;
 
       document.getElementById("numberResponseInputContainer").style.display = 'block';
+    } else if (question.type === 'MULTIPLE_CHOICE') {
+      const mcqContainer = document.getElementById("mcqResponseContainer");
+      mcqContainer.innerHTML = ''; // Clear previous options
+      mcqContainer.style.display = 'block';
+
+      // Assume single-choice MCQ; for multiple-choice, change input type to 'checkbox'
+      question.options.forEach((option, idx) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.classList.add('form-check');
+
+        const optionInput = document.createElement('input');
+        optionInput.classList.add('form-check-input');
+        optionInput.type = 'radio'; // Change to 'checkbox' for multiple-choice
+        optionInput.name = 'mcqOption';
+        optionInput.id = `mcqOption${idx}`;
+        optionInput.value = option;
+
+        // Check if this option was previously selected
+        if (question.choiceResponse === option) {
+          optionInput.checked = true;
+        }
+
+        const optionLabel = document.createElement('label');
+        optionLabel.classList.add('form-check-label');
+        optionLabel.htmlFor = `mcqOption${idx}`;
+        optionLabel.innerText = option;
+
+        optionDiv.appendChild(optionInput);
+        optionDiv.appendChild(optionLabel);
+        mcqContainer.appendChild(optionDiv);
+      });
     }
-    // handle MCQ implementation here
-    // else if (question.type === 'MULTIPLE_CHOICE') {
-    //     // MCQ handling code
-    // }
   }
 
   function saveAnswer() {
@@ -117,8 +142,14 @@
       question.textResponse = document.getElementById("textResponseInput").value;
     } else if (question.type === 'NUMBER_RANGE') {
       question.numberResponse = parseInt(document.getElementById("numberResponseInput").value);
+    } else if (question.type === 'MULTIPLE_CHOICE') {
+      const selectedOption = document.querySelector('input[name="mcqOption"]:checked');
+      if (selectedOption) {
+        question.choiceResponse = selectedOption.value;
+      } else {
+        question.choiceResponse = null;
+      }
     }
-    // Handle MCQ responses if applicable
   }
 
   function nextQuestion() {
@@ -142,13 +173,23 @@
 
       if (question.type === 'OPEN_ENDED') {
         responsePayload.textResponse = question.textResponse;
+        if (!responsePayload.textResponse) {
+          alert(`Please provide an answer for question: "${question.text}"`);
+          return;
+        }
       } else if (question.type === 'NUMBER_RANGE') {
         responsePayload.numberResponse = question.numberResponse;
+        if (responsePayload.numberResponse === undefined || isNaN(responsePayload.numberResponse)) {
+          alert(`Please provide a valid number for question: "${question.text}"`);
+          return;
+        }
+      } else if (question.type === 'MULTIPLE_CHOICE') {
+        responsePayload.choiceResponse = question.choiceResponse;
+        if (!responsePayload.choiceResponse) {
+          alert(`Please select an option for question: "${question.text}"`);
+          return;
+        }
       }
-      // handle MCQ implementation here
-      // else if (question.type === 'MULTIPLE_CHOICE') {
-      //     responsePayload.selectedOption = question.selectedOption;
-      // }
 
       try {
         const response = await fetch(`/api/response/${question.id}`, {

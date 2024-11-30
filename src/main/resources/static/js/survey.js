@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 newOptionDiv.classList.add('mb-3');
                 newOptionDiv.innerHTML = `
                     <label for="option${questionIndex}_${optionIndex}" class="form-label">Option ${optionIndex + 1}:</label>
-                    <input type="text" class="form-control option-input" name="questions[${questionIndex}].options[${optionIndex}]" id="option${questionIndex}_${optionIndex}" />
+                    <input type="text" class="form-control option-input" name="questions[${questionIndex}].options[${optionIndex}]" id="option${questionIndex}_${optionIndex}" required />
                 `;
 
                 dynamicInputs.appendChild(newOptionDiv);
