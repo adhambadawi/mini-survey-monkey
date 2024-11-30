@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Question {
@@ -14,6 +15,7 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Question text cannot be empty")
     private String text;
 
     @Enumerated(EnumType.STRING)
@@ -23,6 +25,8 @@ public class Question {
     private Integer maxValue;
 
     @ElementCollection
+    @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
+    @Column(name = "option_text")
     private List<String> options = new ArrayList<>();
 
     @ManyToOne
