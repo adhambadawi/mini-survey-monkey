@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,13 +128,23 @@ public class QuestionRepositoryIntegrationTest {
     @Test
     void testSavingEmptyQuestion(){
         Question question = new Question("", QuestionType.MULTIPLE_CHOICE);
+        Question finalQuestion = question;
         assertThrows(Exception.class, () -> {
-            questionRepository.save(question);
+            questionRepository.save(finalQuestion);
         });
-        question.setText("non_empty_text");
+
+        question = new Question("non_empty_text", QuestionType.MULTIPLE_CHOICE);
+        List<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
+        options.add("3");
+        question.setOptions(options);
         questionRepository.save(question);
+        assertTrue(questionRepository.findById(question.getId()).isPresent());
+        Question q =  questionRepository.findById(question.getId()).get();
+        assertEquals(q.getText(), question.getText());
+        assertEquals(q.getType(), question.getType());
+        assertEquals(3, q.getOptions().size());
     }
-
-
-
+    
 }
