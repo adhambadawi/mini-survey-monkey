@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -24,9 +25,6 @@ public class QuestionRepositoryIntegrationTest {
 
     @Autowired
     private QuestionRepository questionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private SurveyRepository surveyRepository;
@@ -73,6 +71,8 @@ public class QuestionRepositoryIntegrationTest {
         //Test MCQ
         Question retrievedMCQ = questionRepository.findByType(QuestionType.MULTIPLE_CHOICE).get(0);
         assertSame(retrievedMCQ.getType(), QuestionType.MULTIPLE_CHOICE);
+
+        //Test MCQ with blank test
 
         //Test Open Ended
         Question retrievedOpenEnded = questionRepository.findByType(QuestionType.OPEN_ENDED).get(0);
@@ -122,6 +122,16 @@ public class QuestionRepositoryIntegrationTest {
         List<Question> retrievedSurvey1 = questionRepository.findBySurvey(survey1);
         assertEquals(2, retrievedSurvey1.size());
         assertSame(retrievedSurvey1.get(0).getSurvey(), survey1);
+    }
+
+    @Test
+    void testSavingEmptyQuestion(){
+        Question question = new Question("", QuestionType.MULTIPLE_CHOICE);
+        assertThrows(Exception.class, () -> {
+            questionRepository.save(question);
+        });
+        question.setText("non_empty_text");
+        questionRepository.save(question);
     }
 
 
