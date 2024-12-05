@@ -24,7 +24,7 @@ public class Question {
     private Integer minValue;
     private Integer maxValue;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
     @Column(name = "option_text")
     private List<String> options = new ArrayList<>();

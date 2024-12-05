@@ -11,8 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,9 +26,6 @@ public class QuestionRepositoryIntegrationTest {
 
     @Autowired
     private QuestionRepository questionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private SurveyRepository surveyRepository;
@@ -73,6 +72,8 @@ public class QuestionRepositoryIntegrationTest {
         //Test MCQ
         Question retrievedMCQ = questionRepository.findByType(QuestionType.MULTIPLE_CHOICE).get(0);
         assertSame(retrievedMCQ.getType(), QuestionType.MULTIPLE_CHOICE);
+
+        //Test MCQ with blank test
 
         //Test Open Ended
         Question retrievedOpenEnded = questionRepository.findByType(QuestionType.OPEN_ENDED).get(0);
@@ -124,6 +125,26 @@ public class QuestionRepositoryIntegrationTest {
         assertSame(retrievedSurvey1.get(0).getSurvey(), survey1);
     }
 
+    @Test
+    void testSavingEmptyQuestion(){
+        Question question = new Question("", QuestionType.MULTIPLE_CHOICE);
+        Question finalQuestion = question;
+        assertThrows(Exception.class, () -> {
+            questionRepository.save(finalQuestion);
+        });
 
-
+        question = new Question("non_empty_text", QuestionType.MULTIPLE_CHOICE);
+        List<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
+        options.add("3");
+        question.setOptions(options);
+        questionRepository.save(question);
+        assertTrue(questionRepository.findById(question.getId()).isPresent());
+        Question q =  questionRepository.findById(question.getId()).get();
+        assertEquals(q.getText(), question.getText());
+        assertEquals(q.getType(), question.getType());
+        assertEquals(3, q.getOptions().size());
+    }
+    
 }
